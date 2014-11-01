@@ -1,4 +1,4 @@
-from flask import Flask, redirect, url_for, session, request, jsonify
+from flask import Flask, render_template, redirect, url_for, session, request, jsonify
 from flask_oauthlib.client import OAuth
 import requests
 
@@ -28,9 +28,9 @@ google = oauth.remote_app(
 @app.route('/')
 def index():
     if 'google_token' in session:
-        me = google.get('userinfo')
-        return jsonify({"data": me.data})
-    return redirect(url_for('login'))
+        user = google.get('userinfo')
+        return jsonify({"data": user.data})
+    return render_template('home.html')
 
 
 @app.route('/login')
@@ -53,8 +53,8 @@ def authorized():
             request.args['error_description']
         )
     session['google_token'] = (resp['access_token'], '')
-    me = google.get('userinfo')
-    return jsonify({"data": me.data})
+    user = google.get('userinfo')
+    return jsonify({"data": user.data})
 
 
 @google.tokengetter
@@ -85,4 +85,4 @@ def yo_request():
 	return render_template('yo.html', values=template_values)
 
 if __name__ == "__main__":
-	app.run(debug=True, port=8000)
+	app.run(debug=True, port=8080)
