@@ -1,37 +1,65 @@
-from flask import Flask, render_template, request
-import requests
+from flask import Flask, redirect, url_for, session, request, jsonify
 from flask_oauthlib.client import OAuth
-app = Flask(__name__)
+import requests
 
+app = Flask(__name__)
+app.config['GOOGLE_ID'] = "805075416684-sm8ktm9sel14r7fv42tocdmpsk423fni.apps.googleusercontent.com"
+app.config['GOOGLE_SECRET'] = "p_4wg243g0N5seeG9sgxj1fz"
+app.debug = True
+app.secret_key = 'development'
+oauth = OAuth(app)
 YO_API_TOKEN = 'b0651284-6164-485d-99ee-fa95a8f4f13a'
 
-oauth = OAuth()
-tasks = oauth.remote_app('tasks',
-    consumer_key='805075416684-sm8ktm9sel14r7fv42tocdmpsk423fni.apps.googleusercontent.com',
-    consumer_secret='p_4wg243g0N5seeG9sgxj1fz',request_token_params={'scope':['https://www.googleapis.com/auth/tasks']},
-    base_url='https://www.googleapis.com/oauth2/v1',
-    authorize_url='https://accounts.google.com/o/oauth2/auth',
+google = oauth.remote_app(
+    'google',
+    consumer_key=app.config.get('GOOGLE_ID'),
+    consumer_secret=app.config.get('GOOGLE_SECRET'),
+    request_token_params={
+        'scope': 'https://www.googleapis.com/auth/userinfo.email'
+    },
+    base_url='https://www.googleapis.com/oauth2/v1/',
+    request_token_url=None,
     access_token_method='POST',
-    access_token_url='https://accounts.google.com/o/oauth2/token', 
-    request_token_url=None
+    access_token_url='https://accounts.google.com/o/oauth2/token',
+    authorize_url='https://accounts.google.com/o/oauth2/auth',
 )
 
-@app.route('/') 
+
+@app.route('/')
 def index():
-   return render_template('home.html')
+    if 'google_token' in session:
+        me = google.get('userinfo')
+        return jsonify({"data": me.data})
+    return redirect(url_for('login'))
+
 
 @app.route('/login')
 def login():
-	print tasks.authorize(callback=url_for('authorized',_external=True))
-	return tasks.authorize(callback=url_for('authorized',_external=True))
+    return google.authorize(callback=url_for('authorized', _external=True))
+
+
+@app.route('/logout')
+def logout():
+    session.pop('google_token', None)
+    return redirect(url_for('index'))
+
 
 @app.route('/login/authorized')
-@tasks.authorized_handler
-def authorized(resp):
-	session['tasks_token'] = (resp['access_token'])
-	user = tasks.get('userinfo')
-	session['user_email'] = user.data['email']
-	return user
+def authorized():
+    resp = google.authorized_response()
+    if resp is None:
+        return 'Access denied: reason=%s error=%s' % (
+            request.args['error_reason'],
+            request.args['error_description']
+        )
+    session['google_token'] = (resp['access_token'], '')
+    me = google.get('userinfo')
+    return jsonify({"data": me.data})
+
+
+@google.tokengetter
+def get_google_oauth_token():
+    return session.get('google_token')
 
 @app.route('/create') 
 def create():
