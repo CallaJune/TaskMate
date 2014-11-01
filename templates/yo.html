@@ -1,0 +1,30 @@
+<html>
+<head>
+	<title>Task Mate</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+</head>
+<style>
+	input[type="text"]{
+		text-transform: uppercase;
+	}
+</style>
+<body id="main">
+	<nav class="navbar navbar-default navbar-static-top" role="navigation">
+		<div class="container">
+		</div>
+	</nav>
+	<div class="form-group">
+	<div class="col-md-4">
+		<form action="/yo/send" method="get">
+			<input name='username' type="text" placeholder='YOSERNAME'>
+			<input type='submit' value='Submit'>
+		</form>
+	</div>
+	<div>
+		Successfully sent Yo to {{username}}
+	</div>
+	</div>
+</body>
+<script>
+</script>
+</html>
