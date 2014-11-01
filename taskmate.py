@@ -1,76 +1,78 @@
-from flask import Flask, render_template, redirect, url_for, session, request, jsonify
-from flask_oauthlib.client import OAuth
+import json
+from apiclient.discovery import build_from_document, build
+import httplib2
+import random
 import requests
 
-app = Flask(__name__)
-app.config['GOOGLE_ID'] = "805075416684-sm8ktm9sel14r7fv42tocdmpsk423fni.apps.googleusercontent.com"
-app.config['GOOGLE_SECRET'] = "p_4wg243g0N5seeG9sgxj1fz"
-app.debug = True
-app.secret_key = 'development'
-oauth = OAuth(app)
+from oauth2client import client
+from oauth2client.client import OAuth2WebServerFlow
+
+from flask import Flask, render_template, session, request, redirect, url_for, abort
+
+CLIENT_ID = "805075416684-sm8ktm9sel14r7fv42tocdmpsk423fni.apps.googleusercontent.com"
+CLIENT_SECRET = 'p_4wg243g0N5seeG9sgxj1fz'
 YO_API_TOKEN = 'b0651284-6164-485d-99ee-fa95a8f4f13a'
 
-google = oauth.remote_app(
-    'google',
-    consumer_key=app.config.get('GOOGLE_ID'),
-    consumer_secret=app.config.get('GOOGLE_SECRET'),
-    request_token_params={
-        'scope': 'https://www.googleapis.com/auth/userinfo.email'
-    },
-    base_url='https://www.googleapis.com/oauth2/v1/',
-    request_token_url=None,
-    access_token_method='POST',
-    access_token_url='https://accounts.google.com/o/oauth2/token',
-    authorize_url='https://accounts.google.com/o/oauth2/auth',
-)
 
-
-@app.route('/')
-def index():
-    if 'google_token' in session:
-        user = google.get('userinfo')
-        return jsonify({"data": user.data})
-    return render_template('home.html')
+app = Flask(__name__)
 
 
 @app.route('/login')
 def login():
-    return google.authorize(callback=url_for('authorized', _external=True))
+  flow = OAuth2WebServerFlow(client_id=CLIENT_ID,
+    client_secret=CLIENT_SECRET,
+    scope='https://www.googleapis.com/auth/youtube',
+    redirect_uri='http://localhost:8000/oauth2callback',
+    approval_prompt='force',
+    access_type='offline')
 
+  auth_uri = flow.step1_get_authorize_url()
+  return redirect(auth_uri)
 
-@app.route('/logout')
-def logout():
-    session.pop('google_token', None)
-    return redirect(url_for('index'))
+@app.route('/signout')
+def signout():
+  del session['credentials']
+  session['message'] = "You have logged out"
 
+  return redirect(url_for('index'))
 
-@app.route('/login/authorized')
-def authorized():
-    resp = google.authorized_response()
-    if resp is None:
-        return 'Access denied: reason=%s error=%s' % (
-            request.args['error_reason'],
-            request.args['error_description']
-        )
-    session['google_token'] = (resp['access_token'], '')
-    user = google.get('userinfo')
-    return jsonify({"data": user.data})
+@app.route('/oauth2callback')
+def oauth2callback():
+  code = request.args.get('code')
+  if code:
+    # exchange the authorization code for user credentials
+    flow = OAuth2WebServerFlow(CLIENT_ID,
+      CLIENT_SECRET,
+      "https://www.googleapis.com/auth/youtube")
+    flow.redirect_uri = request.base_url
+    try:
+      credentials = flow.step2_exchange(code)
+    except Exception as e:
+      print "Unable to get an access token because ", e.message
 
+    # store these credentials for the current user in the session
+    # This stores them in a cookie, which is insecure. Update this
+    # with something better if you deploy to production land
+    session['credentials'] = credentials.to_json()
 
-@google.tokengetter
-def get_google_oauth_token():
-    return session.get('google_token')
+  return redirect(url_for('index'))
 
-@app.route('/create') 
-def create():
-	template_values = {}
-	eventname = request.args.get('eventname')
-	eventdescription = request.args.get('eventdescription')
+@app.route('/')
+def index():
+  if 'credentials' not in session:
+    return redirect(url_for('login'))
 
-	template_values['eventname'] = eventname
-	template_values['eventdescription'] = eventdescription
-    
-	return render_template('create.html', values=template_values)
+  credentials = session['credentials']
+
+  http = httplib2.Http()
+  http = credentials.authorize(http)
+
+  youtube = build("youtube", "v3", http=http)
+  playlists = youtube.playlists().list(
+    part="id,snippet",
+    mine=True
+  ).execute()
+  return render_template("index.html", playlists=playlists)
 
 @app.route('/yo')
 def yo():
@@ -85,4 +87,5 @@ def yo_request():
 	return render_template('yo.html', values=template_values)
 
 if __name__ == "__main__":
-	app.run(debug=True, port=8080)
+	app.secret_key = 'development'
+	app.run(debug=True, port=8000)
