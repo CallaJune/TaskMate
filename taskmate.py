@@ -1,6 +1,17 @@
+from flask_oauth import OAuth
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
+
+oauth = OAuth()
+gtasks = oauth.remote_app('googletasks',
+	base_url='https://www.googleapis.com/',
+	request_token_url=None,
+	access_token_url=None,
+	authorize_url='/auth/tasks',
+	consumer_key='805075416684-sm8ktm9sel14r7fv42tocdmpsk423fni.apps.googleusercontent.com',
+	consumer_secret='p_4wg243g0N5seeG9sgxj1fz'
+	)
 
 @app.route('/') 
 def index():
