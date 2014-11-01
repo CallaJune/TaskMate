@@ -33,4 +33,4 @@ def yo_request():
 	return render_template('yo.html', values=template_values)
 
 if __name__ == "__main__":
-	app.run(debug=True)
+	app.run(debug=True, port=8000)
