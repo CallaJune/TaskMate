@@ -41,7 +41,6 @@ class Task(ndb.Model):
   def task_link(self):
     return "/task/{0}".format(self.key.id())
 
-
 class YoHandler(webapp2.RequestHandler):
   def get(self):
     username = self.request.get('username')
@@ -51,22 +50,20 @@ class YoHandler(webapp2.RequestHandler):
     req = urllib2.Request(url,data)
     response = urllib2.urlopen(req)
 
-# class YoHandler(webapp2.RequestHandler):
-#   def get(self):
-#     username = "CHIVAS604"
-#     url = YO_URL
-#     values = {'api_token':settings.YO_API_TOKEN, 'username':username}
-#     data = urllib.urlencode(values)
-#     req = urllib2.Request(url,data)
-#     response = urllib2.urlopen(req)
-
 class MainHandler(webapp2.RequestHandler):
-
   def render_response(self, template, **context):
     renderer = jinja2.get_jinja2(app=self.app)
     rendered_value = renderer.render_template(template, **context)
     self.response.write(rendered_value)
+  @decorator.oauth_aware
+  def get(self):
+        self.render_response('splash.html')
 
+class HomeHandler(webapp2.RequestHandler):
+  def render_response(self, template, **context):
+    renderer = jinja2.get_jinja2(app=self.app)
+    rendered_value = renderer.render_template(template, **context)
+    self.response.write(rendered_value)
   @decorator.oauth_aware
   def get(self):
     if decorator.has_credentials():
@@ -82,23 +79,6 @@ class MainHandler(webapp2.RequestHandler):
 
 def truncate(s, l):
   return s[:l] + '...' if len(s) > l else s
-
-class YosernameHandler(webapp2.RequestHandler):
-  @decorator.oauth_aware
-  def render_response(self, template, **context):
-    renderer = jinja2.get_jinja2(app=self.app)
-    rendered_value = renderer.render_template(template, **context)
-    self.response.write(rendered_value)
-  def get(self):
-        template_values = {
-        }
-        yosername = (self.request.get('yosername')).upper()
-        template_values['yosername'] = yosername
-
-        delay = self.request.get('delay')
-        template_values['delay'] = delay
-        
-        self.render_response('yoinput.html')
 
 class TaskHandler(webapp2.RequestHandler):
 
@@ -167,8 +147,7 @@ class CreateHandler(webapp2.RequestHandler):
   def get(self):  
         template_values = {}
         taskname = self.request.get('taskname')
-        taskdescription = self.request.get('eventdescription')
-        username = self.request.get('username')
+        taskdescription = self.request.get('taskdescription')
 
         #transfer taskdue into 2014-11-03T12:00:00.000Z format
         pretaskdue = self.request.get('taskdue')
@@ -186,7 +165,7 @@ class CreateHandler(webapp2.RequestHandler):
 
         tasks = service.tasks().insert(tasklist='@default', body=tasks).execute(http=decorator.http())
         
-        task = Task(yosername = username,
+        task = Task(yosername = 'CHIVAS604',
         task_name = taskname,
         task_id = tasks['id'],
         task_description = taskdescription,
@@ -194,24 +173,18 @@ class CreateHandler(webapp2.RequestHandler):
         scheduled = False)
         task.put()
 
-        '''
-        1. Figure out how to insert a task. 
-        2. Confirm due date format.
-        3. Request due date from user.
-        '''
-
-        self.redirect('/')
+        self.redirect('/home')
 
 routes = [
-		webapp2.Route('/', MainHandler, name='home'),
+    webapp2.Route('/', MainHandler, name='splash'),
+    webapp2.Route('/home', HomeHandler, name='home'),
     webapp2.Route('/new', NewHandler, name='new'),
     webapp2.Route('/task/<task_id:\d+>', handler=TaskHandler, name='task'),
-    webapp2.Route('/yosername', YosernameHandler, name='yosername'),
     webapp2.Route('/processing', ProcessingHandler, name='process'),
     webapp2.Route('/create', CreateHandler, name='create'),
-		webapp2.Route(decorator.callback_path, decorator.callback_handler(), name='callback'),
+    webapp2.Route(decorator.callback_path, decorator.callback_handler(), name='callback'),
     webapp2.Route('/yo', YoHandler, name='yo'), 
     # webapp2.Route('/yo/recieve', YoReceiveHandler, name='yoRecieve')
-		]
+    ]
 
 application = webapp2.WSGIApplication(routes, debug=True)
