@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import webapp2
-import datetime
 from webapp2_extras import jinja2
 
 from apiclient.discovery import build
