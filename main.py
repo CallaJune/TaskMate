@@ -63,11 +63,28 @@ class MainHandler(webapp2.RequestHandler):
       url = decorator.authorize_url()
       self.render_response('index.html', tasks=[], authorize_url=url)
 
-
 def truncate(s, l):
   return s[:l] + '...' if len(s) > l else s
 
+class YosernameHandler(webapp2.RequestHandler):
+  @decorator.oauth_aware
+  def render_response(self, template, **context):
+    renderer = jinja2.get_jinja2(app=self.app)
+    rendered_value = renderer.render_template(template, **context)
+    self.response.write(rendered_value)
+  def get(self):
+        template_values = {
+        }
+        yosername = self.request.get('yosername')
+        template_values['yosername'] = yosername
+
+        delay = self.request.get('delay')
+        template_values['delay'] = delay
+        
+        self.render_response('yoinput.html')
+
 class NewHandler(webapp2.RequestHandler):
+  @decorator.oauth_aware
   def render_response(self, template, **context):
     renderer = jinja2.get_jinja2(app=self.app)
     rendered_value = renderer.render_template(template, **context)
@@ -127,6 +144,7 @@ class CreateHandler(webapp2.RequestHandler):
 routes = [
 		webapp2.Route('/', MainHandler, name='home'),
     webapp2.Route('/new', NewHandler, name='new'),
+    webapp2.Route('/yosername', YosernameHandler, name='yosername'),
     webapp2.Route('/create', CreateHandler, name='create'),
 		webapp2.Route(decorator.callback_path, decorator.callback_handler(), name='callback'),
     webapp2.Route('/yo', YoHandler, name='yo'), 
