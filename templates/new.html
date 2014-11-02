@@ -7,13 +7,14 @@
   <link rel="stylesheet" href="css/bootstrap-datetimepicker.css">
 </head>
   <style>
-    #logo2 {
-      text-align: center;
-      display: table-cell;
-      vertical-align: middle;
-    }
     #username{
       text-transform: uppercase;
+    }
+    #go{
+      width: 95%;
+    }
+    .col-md-11{
+      width: 535px;
     }
   </style>
   <link href="/css/style.css" rel="stylesheet" type="text/cs">
@@ -21,32 +22,40 @@
 <body >
   <form action="create">
     <ul id="tasklist">
-      <li>
-        <label for="username">Yo Username:</label>
-        <input class="form-control" name="username" type="text" id='username'>
-        <input type="hidden" name="username" value={{username}}>
+      <li class='row'>
+        <div class="col-md-11">
+          <label for="username">Yo Username:</label>
+          <input class="form-control" name="username" type="text" id='username'>
+          <input type="hidden" name="username" value={{username}}>
+        </div>
+      </li>
+      <br>
+      <li class="row">
+        <div class='col-md-11'>
+          <label for="taskname">Task Name:</label>
+          <input class="form-control" name="taskname" type="text" id='taskname'>
+          <input type="hidden" name="taskname" value={{taskname}}>
+        </div>
+      </li>
+      <br>
+      <li class="row">
+        <div class='col-md-11'>
+          <label for="datetimepicker">Task Due Date:</label>
+          <input type="datetime" class="form-control" value="2014-11-15 21:05" name="taskdue" id="datetimepicker">
+          <input type="hidden" name="taskdue" value={{taskdue}}>
+        </div>
+      </li>
+      <br>
+      <li class="row">
+        <div class="col-md-11">
+          <label for="eventdescription">Task Description:</label>
+          <textarea class="form-control" name="eventdescription" type="text" rows="4"></textarea id="eventdescription">
+          <input type="hidden" name="taskdescription" value={{taskdescription}}>
+        </div>
       </li>
       <br>
       <li>
-        <label for="taskname">Task Name:</label>
-        <input class="form-control" name="taskname" type="text" id='taskname'>
-        <input type="hidden" name="taskname" value={{taskname}}>
-      </li>
-      <br>
-      <li>
-        <label for="datetimepicker">Task Due Date:</label>
-        <input type="datetime" class="form-control" value="2014-11-15 21:05" name="taskdue" id="datetimepicker">
-        <input type="hidden" name="taskdue" value={{taskdue}}>
-      </li>
-      <br>
-      <li>
-        <label for="eventdescription">Task Description:</label>
-        <textarea class="form-control" name="eventdescription" type="text" rows="4"></textarea id="eventdescription">
-        <input type="hidden" name="taskdescription" value={{taskdescription}}>
-      </li>
-      <br>
-      <li>
-        <button type="submit" class="btn btn-default">Go</button>
+        <button type="submit" class="btn btn-lg" id='go'>Go</button>
       </li>
     </ul>
   </form>
