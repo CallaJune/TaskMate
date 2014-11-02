@@ -1,5 +1,5 @@
 CLIENT_ID =  ''
 CLIENT_SECRET = ''
-SCOPE=['https://www.googleapis.com/auth/tasks','https://www.googleapis.com/auth/tasks.readonly','https://www.googleapis.com/auth/tasks']
+SCOPE=''
 YO_API_TOKEN= ''
 
