@@ -6,44 +6,50 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
   <link rel="stylesheet" href="css/bootstrap-datetimepicker.css">
 </head>
-<style>
-#logo2 {
-  text-align: center;
-  display: table-cell;
-  vertical-align: middle;
-}
-#username{
-  text-transform: uppercase;
-}
-
-</style>
-<body id="main">
-  <nav class="navbar navbar-default navbar-static-top" role="navigation">
-    <div class="container">
-    </div>
-  </nav>
-  <div class="form-group">
-  <div class="col-md-4">
-    <form action="create">
-      Yo Username:
-      <input class="form-control" name="username" type="text" id='username'>
-      <input type="hidden" name="username" value={{username}}>
-      Task name: 
-      <input class="form-control" name="taskname" type="text">
-      <input type="hidden" name="taskname" value={{taskname}}>
+  <style>
+    #logo2 {
+      text-align: center;
+      display: table-cell;
+      vertical-align: middle;
+    }
+    #username{
+      text-transform: uppercase;
+    }
+  </style>
+  <link href="/css/style.css" rel="stylesheet" type="text/cs">
+  <link href="http://fonts.googleapis.com/css?family=Coming+Soon:regular" rel="stylesheet" type="text/css">
+<body >
+  <form action="create">
+    <ul id="tasklist">
+      <li>
+        <label for="username">Yo Username:</label>
+        <input class="form-control" name="username" type="text" id='username'>
+        <input type="hidden" name="username" value={{username}}>
+      </li>
       <br>
-      Task Due Date: 
-      <input type="datetime" class="form-control" value="2014-11-15 21:05" name="taskdue" id="datetimepicker">
-      <input type="hidden" name="taskdue" value={{taskdue}}>
+      <li>
+        <label for="taskname">Task Name:</label>
+        <input class="form-control" name="taskname" type="text" id='taskname'>
+        <input type="hidden" name="taskname" value={{taskname}}>
+      </li>
       <br>
-      Task description: 
-      <textarea class="form-control" name="eventdescription" type="text" rows="4"></textarea>
-      <input type="hidden" name="taskdescription" value={{taskdescription}}>
-      <br><button type="submit" class="btn btn-default">Go</button>
-    </form>
-
-  </div>
-  </div>
+      <li>
+        <label for="datetimepicker">Task Due Date:</label>
+        <input type="datetime" class="form-control" value="2014-11-15 21:05" name="taskdue" id="datetimepicker">
+        <input type="hidden" name="taskdue" value={{taskdue}}>
+      </li>
+      <br>
+      <li>
+        <label for="eventdescription">Task Description:</label>
+        <textarea class="form-control" name="eventdescription" type="text" rows="4"></textarea id="eventdescription">
+        <input type="hidden" name="taskdescription" value={{taskdescription}}>
+      </li>
+      <br>
+      <li>
+        <button type="submit" class="btn btn-default">Go</button>
+      </li>
+    </ul>
+  </form>
 </body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>

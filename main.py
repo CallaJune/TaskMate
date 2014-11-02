@@ -171,7 +171,7 @@ class CreateHandler(webapp2.RequestHandler):
 
         #transfer taskdue into 2014-11-03T12:00:00.000Z format
         pretaskdue = self.request.get('taskdue')
-        taskdue = pretaskdue[:10] + 'T' + pretaskdue[11:] + ':00.000Z'
+        taskdue = pretaskdue[:10] + ' ' + pretaskdue[11:]
 
         template_values['taskname'] = taskname
         template_values['taskdescription'] = taskdescription
