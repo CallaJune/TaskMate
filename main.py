@@ -11,19 +11,37 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import webapp2
 from webapp2_extras import jinja2
 
 from apiclient.discovery import build
 from oauth2client.appengine import OAuth2Decorator
 
-import settings
+import settings, urllib, urllib2, webapp2
+
+YO_URL = "http://api.justyo.co/yo/"
 
 decorator = OAuth2Decorator(client_id=settings.CLIENT_ID,
                             client_secret=settings.CLIENT_SECRET,
                             scope=settings.SCOPE)
 service = build('tasks', 'v1')
 
+class YoHandler(webapp2.RequestHandler):
+  def get(self):
+    username = "CHIVAS604"
+    url = YO_URL
+    values = {'api_token':settings.YO_API_TOKEN, 'username':username}
+    data = urllib.urlencode(values)
+    req = urllib2.Request(url,data)
+    response = urllib2.urlopen(req)
+
+# class YoHandler(webapp2.RequestHandler):
+#   def get(self):
+#     username = "CHIVAS604"
+#     url = YO_URL
+#     values = {'api_token':settings.YO_API_TOKEN, 'username':username}
+#     data = urllib.urlencode(values)
+#     req = urllib2.Request(url,data)
+#     response = urllib2.urlopen(req)
 
 class MainHandler(webapp2.RequestHandler):
 
@@ -111,6 +129,8 @@ routes = [
     webapp2.Route('/new', NewHandler, name='new'),
     webapp2.Route('/create', CreateHandler, name='create'),
 		webapp2.Route(decorator.callback_path, decorator.callback_handler(), name='callback'),
+    webapp2.Route('/yo', YoHandler, name='yo'), 
+    # webapp2.Route('/yo/recieve', YoReceiveHandler, name='yoRecieve')
 		]
 
 application = webapp2.WSGIApplication(routes, debug=True)
