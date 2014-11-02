@@ -16,7 +16,9 @@ from webapp2_extras import jinja2
 from apiclient.discovery import build
 from oauth2client.appengine import OAuth2Decorator
 
-import settings, urllib, urllib2, webapp2
+from google.appengine.ext import ndb
+
+import settings, urllib, urllib2, webapp2, logging
 
 YO_URL = "http://api.justyo.co/yo/"
 
@@ -25,9 +27,16 @@ decorator = OAuth2Decorator(client_id=settings.CLIENT_ID,
                             scope=settings.SCOPE)
 service = build('tasks', 'v1')
 
+class Schedule(ndb.Model):
+  yosername = ndb.StringProperty(required=True)
+  task_name = ndb.StringProperty(required=True)
+  due_date = ndb.StringProperty(required=True)
+
+
+
 class YoHandler(webapp2.RequestHandler):
   def get(self):
-    username = "CHIVAS604"
+    username = self.request.get('username')
     url = YO_URL
     values = {'api_token':settings.YO_API_TOKEN, 'username':username}
     data = urllib.urlencode(values)
@@ -94,8 +103,7 @@ class CreateHandler(webapp2.RequestHandler):
 
   @decorator.oauth_aware
   def get(self):  
-        template_values = {
-        }
+        template_values = {}
         taskname = self.request.get('taskname')
         taskdescription = self.request.get('taskdescription')
 
@@ -106,7 +114,6 @@ class CreateHandler(webapp2.RequestHandler):
         template_values['taskname'] = taskname
         template_values['taskdescription'] = taskdescription
         template_values['taskdue'] = taskdue
-
         #create a task with all that information and do everything with yo
         tasks = {
           'title': taskname,

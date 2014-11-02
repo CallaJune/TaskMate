@@ -12,6 +12,10 @@
   display: table-cell;
   vertical-align: middle;
 }
+#username{
+  text-transform: uppercase;
+}
+
 </style>
 <body id="main">
   <nav class="navbar navbar-default navbar-static-top" role="navigation">
@@ -21,6 +25,9 @@
   <div class="form-group">
   <div class="col-md-4">
     <form action="create">
+      Yo Username (All Caps):
+      <input class="form-control" name="username" type="text" id='username'>
+      <input type="hidden" name="username" value={{username}}>
       Task name: 
       <input class="form-control" name="taskname" type="text">
       <input type="hidden" name="taskname" value={{taskname}}>
