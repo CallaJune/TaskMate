@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+  <head>
+    <link href="/css/style.css" rel="stylesheet" type="text/cs">
+    <link href="http://fonts.googleapis.com/css?family=Coming+Soon:regular" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <ul id="tasklist">
+      <li class="{{ task.status }}">
+        <a class="title" title="{{ task.title }}">{{ task.title }}</a>
+        {{ task.description }}
+        {{ task.due_time }}
+      </li>
+      <a class="title" title="Add more tasks" href="/new">Add More Tasks</a>
+    </ul>
+  </body>
+</html>

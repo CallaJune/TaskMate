@@ -6,7 +6,6 @@
   </head>
   <body>
     <ul id="tasklist">
-      {% if tasks|length == 0 %}
       <li>
         <span class="check">
           <span>
@@ -16,10 +15,12 @@
       {% if authorize_url %}
         <a class="title" title="Grant read access to your tasks" href="{{ authorize_url }}">Grant Access</a>
       {% else %}
-        <a class="title" title="Add more tasks in Gmail" href="http://mail.google.com/">Add More Tasks</a>
+        <a class="title" title="Add more tasks" href="/new">Add More Tasks</a>
+
       {% endif %}
       </li>
-      {% endif %}
+      </ul>
+      <ul id="tasklist">
       {% for task in tasks %}
       <li class="{{ task.status }}">
         <span class="check">
