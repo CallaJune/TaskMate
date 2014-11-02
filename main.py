@@ -127,15 +127,18 @@ class ProcessingHandler(webapp2.RequestHandler):
     query = Task.query()
     query = query.fetch()
     for task in query:
-      username = task.yosername
-      link = 'http://task-mate.appspot.com/' + task.task_link()
-      url = YO_URL
-      values = {'api_token':settings.YO_API_TOKEN, 'username':username, 'link':link}
-      data = urllib.urlencode(values)
-      req = urllib2.Request(url,data)
-      response = urllib2.urlopen(req)
+      if task.scheduled == False:
+        task.scheduled = True
+        task.put()
+        username = task.yosername
+        link = 'http://task-mate.appspot.com/' + task.task_link()
+        url = YO_URL
+        values = {'api_token':settings.YO_API_TOKEN, 'username':username, 'link':link}
+        data = urllib.urlencode(values)
+        req = urllib2.Request(url,data)
+        response = urllib2.urlopen(req)
 
-    print link
+    self.render_response('loader.html', task=[], authorize_url='none')
 
 class CreateHandler(webapp2.RequestHandler):
   def render_response(self, template, **context):
