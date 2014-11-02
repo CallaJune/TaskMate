@@ -142,20 +142,29 @@ class NewHandler(webapp2.RequestHandler):
       self.render_response('new.html', tasks=[], authorize_url=url)
 
 class ProcessingHandler(webapp2.RequestHandler):
+  def render_response(self, template, **context):
+    renderer = jinja2.get_jinja2(app=self.app)
+    rendered_value = renderer.render_template(template, **context)
+    self.response.write(rendered_value)
+
+  @decorator.oauth_aware
   def get(self):
     #comment process calculation
     query = Task.query()
     query = query.fetch()
     for task in query:
-      username = task.yosername
-      link = 'http://task-mate.appspot.com/' + task.task_link()
-      url = YO_URL
-      values = {'api_token':settings.YO_API_TOKEN, 'username':username, 'link':link}
-      data = urllib.urlencode(values)
-      req = urllib2.Request(url,data)
-      response = urllib2.urlopen(req)
+      if task.scheduled == False:
+        task.scheduled = True
+        task.put()
+        username = task.yosername
+        link = 'http://task-mate.appspot.com/' + task.task_link()
+        url = YO_URL
+        values = {'api_token':settings.YO_API_TOKEN, 'username':username, 'link':link}
+        data = urllib.urlencode(values)
+        req = urllib2.Request(url,data)
+        response = urllib2.urlopen(req)
 
-    print link
+    self.render_response('loader.html', task=[], authorize_url='none')
 
 class CreateHandler(webapp2.RequestHandler):
   def render_response(self, template, **context):
