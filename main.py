@@ -92,7 +92,7 @@ class YosernameHandler(webapp2.RequestHandler):
   def get(self):
         template_values = {
         }
-        yosername = self.request.get('yosername')
+        yosername = (self.request.get('yosername')).upper()
         template_values['yosername'] = yosername
 
         delay = self.request.get('delay')
