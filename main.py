@@ -41,14 +41,14 @@ class Task(ndb.Model):
   def task_link(self):
     return "/task/{0}".format(self.key.id())
 
-class YoHandler(webapp2.RequestHandler):
-  def get(self):
-    username = self.request.get('username')
-    url = YO_URL
-    values = {'api_token':settings.YO_API_TOKEN, 'username':username}
-    data = urllib.urlencode(values)
-    req = urllib2.Request(url,data)
-    response = urllib2.urlopen(req)
+# class YoHandler(webapp2.RequestHandler):
+#   def get(self):
+#     username = self.request.get('username')
+#     url = YO_URL
+#     values = {'api_token':settings.YO_API_TOKEN, 'username':username}
+#     data = urllib.urlencode(values)
+#     req = urllib2.Request(url,data)
+#     response = urllib2.urlopen(req)
 
 class MainHandler(webapp2.RequestHandler):
   def render_response(self, template, **context):
@@ -183,7 +183,7 @@ routes = [
     webapp2.Route('/processing', ProcessingHandler, name='process'),
     webapp2.Route('/create', CreateHandler, name='create'),
     webapp2.Route(decorator.callback_path, decorator.callback_handler(), name='callback'),
-    webapp2.Route('/yo', YoHandler, name='yo'), 
+    # webapp2.Route('/yo', YoHandler, name='yo'), 
     # webapp2.Route('/yo/recieve', YoReceiveHandler, name='yoRecieve')
     ]
 

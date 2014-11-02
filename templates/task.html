@@ -7,11 +7,11 @@
   <body>
     <ul id="tasklist">
       <li class="{{ task.status }}">
-        <a class="title" title="{{ task.title }}">{{ task.title }}</a>
-        {{ task.description }}
-        {{ task.due_time }}
+        Task Name: {{task.title}}
       </li>
-      <a class="title" title="Add more tasks" href="/new">Add More Tasks</a>
+      <li>
+        Due Date: {{task.due_time}}
+      </li>
     </ul>
   </body>
 </html>
