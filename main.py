@@ -122,6 +122,12 @@ class NewHandler(webapp2.RequestHandler):
       self.render_response('new.html', tasks=[], authorize_url=url)
 
 class ProcessingHandler(webapp2.RequestHandler):
+  @decorator.oauth_aware
+  def render_response(self, template, **context):
+    renderer = jinja2.get_jinja2(app=self.app)
+    rendered_value = renderer.render_template(template, **context)
+    self.response.write(rendered_value)
+
   def get(self):
     #comment process calculation
     query = Task.query()
